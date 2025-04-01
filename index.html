@@ -1,0 +1,1245 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta content="Sport NZ Video Link Finder" property="og:title"/>
+<meta content="Extract YouTube and Vimeo links by crawling a website" property="og:description"/>
+<meta content="assets/img_64x64_b243d8c9.png" property="og:image"/>
+<meta content="website" property="og:type"/>
+<link href="assets/img_32x32_b243d8c9.png" rel="icon" type="image/png"/>
+<title>Sport NZ Video Link Finder</title>
+<script src="assets/script_35f8252f.js"></script>
+<script src="assets/script_c50a0297.js"></script>
+<link href="assets/style_61346a89.css" rel="stylesheet"/>
+<style>
+        :root {
+            --primary-color: #ad1a32;
+            --primary-hover: #8a1528;
+            --light-primary: #f8e6e8;
+            --dark-primary: #7a1323;
+            --accent-color: #FF0000; /* YouTube Red */
+            --accent-hover: #cc0000;
+            --vimeo-color: #1AB7EA; /* Vimeo Blue */
+            --vimeo-hover: #1690b8;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            background-color: #f5f7fa;
+        }
+
+        .sport-nz-primary {
+            background-color: var(--primary-color);
+        }
+
+        .sport-nz-primary-hover:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .sport-nz-text {
+            color: var(--primary-color);
+        }
+
+        .sport-nz-border {
+            border-color: var(--primary-color);
+        }
+
+        .sport-nz-bg-light {
+            background-color: var(--light-primary);
+        }
+
+        .accent-button {
+            background-color: var(--accent-color);
+        }
+
+        .accent-button:hover {
+            background-color: var(--accent-hover);
+        }
+
+        .card {
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        .app-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--dark-primary) 100%);
+        }
+
+        .btn {
+            transition: all 0.3s ease;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.625rem 1.25rem;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .btn-secondary {
+            background-color: #f3f4f6;
+            color: #374151;
+        }
+
+        .btn-secondary:hover {
+            background-color: #e5e7eb;
+        }
+
+        .btn-accent {
+            background-color: var(--accent-color);
+            color: white;
+        }
+
+        .btn-accent:hover {
+            background-color: var(--accent-hover);
+        }
+
+        .input-field {
+            border-radius: 0.5rem;
+            border: 1px solid #d1d5db;
+            padding: 0.625rem 1rem;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px var(--light-primary);
+        }
+
+        .progress-bar-container {
+            height: 0.5rem;
+            background-color: #e5e7eb;
+            border-radius: 0.25rem;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-color) 0%, var(--accent-color) 100%);
+            transition: width 0.3s ease;
+        }
+
+        .results-table {
+            border-collapse: separate;
+            border-spacing: 0;
+            width: 100%;
+        }
+
+        .results-table th {
+            background-color: #f9fafb;
+            font-weight: 500;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+            color: #6b7280;
+            padding: 0.75rem 1rem;
+            text-align: left;
+        }
+
+        .results-table td {
+            padding: 1rem;
+            vertical-align: top;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .results-table tr:hover {
+            background-color: #f9fafb;
+        }
+
+        .source-card {
+            border: 1px solid #e5e7eb;
+            border-radius: 0.75rem;
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .source-card:hover {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        .source-header {
+            background: linear-gradient(to right, #f9fafb, #ffffff);
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            border-radius: 9999px;
+        }
+
+        .badge-primary {
+            background-color: var(--light-primary);
+            color: var(--primary-color);
+        }
+
+        .badge-youtube {
+            background-color: #ffe0e0; /* Light YouTube Red */
+            color: var(--accent-color);
+        }
+        .badge-vimeo {
+            background-color: #d1f1fc; /* Light Vimeo Blue */
+            color: var(--vimeo-color);
+        }
+        .badge-other-video {
+             background-color: #e5e7eb;
+             color: #4b5563;
+        }
+
+
+        .animate-pulse {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: .5;
+            }
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a1a1a1;
+        }
+
+        /* Notification styles */
+        .notification {
+            position: fixed;
+            bottom: 1rem;
+            right: 1rem;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            z-index: 50;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s ease;
+            max-width: 24rem;
+        }
+
+        .notification.success {
+            background-color: #10b981;
+            color: white;
+        }
+
+        .notification.error {
+            background-color: #ef4444;
+            color: white;
+        }
+
+        .notification.warning {
+            background-color: #f59e0b;
+            color: white;
+        }
+
+        .notification.info {
+            background-color: #3b82f6;
+            color: white;
+        }
+    </style>
+<script>
+            window.load_data_from_csv = (filename) => {
+                // Implementation needed when code is downloaded
+            };
+
+            window.save_data_to_csv = (filename, data) => {
+                // Implementation needed when code is downloaded
+            };
+
+            window.call_llm = (system_prompt, user_messages, json_fields) => {
+                // Implementation needed when code is downloaded
+            };
+        </script></head>
+<body class="min-h-screen flex flex-col">
+<header class="app-header text-white py-6 shadow-lg">
+<div class="container mx-auto px-6">
+<div class="flex items-center justify-between">
+<div class="flex items-center">
+<div class="mr-4">
+<i class="fas fa-video text-3xl"></i>
+</div>
+<div>
+<h1 class="text-2xl font-bold">Sport NZ Video Link Finder</h1>
+<p class="text-sm opacity-80 mt-1">Find YouTube &amp; Vimeo links by crawling a website</p>
+</div>
+</div>
+<div>
+<span class="text-sm bg-white bg-opacity-20 px-3 py-1 rounded-full">
+<i class="fas fa-bolt mr-1"></i> Works completely offline
+                    </span>
+</div>
+</div>
+</div>
+</header>
+<main class="container mx-auto px-6 py-8 flex-grow max-w-6xl">
+<section class="mb-8">
+<div class="card bg-white p-6">
+<div class="flex items-center mb-4">
+<div class="w-10 h-10 rounded-full flex items-center justify-center bg-blue-100 text-blue-600 mr-3">
+<i class="fas fa-info-circle"></i>
+</div>
+<h2 class="text-xl font-bold sport-nz-text">How It Works</h2>
+</div>
+<div class="grid md:grid-cols-5 gap-4 mb-4">
+<div class="bg-gray-50 p-4 rounded-lg text-center">
+<div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center mx-auto mb-2">
+<span class="font-semibold">1</span>
+</div>
+<p class="text-sm">Paste URLs (up to 500)</p>
+</div>
+<div class="bg-gray-50 p-4 rounded-lg text-center">
+<div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center mx-auto mb-2">
+<span class="font-semibold">2</span>
+</div>
+<p class="text-sm">Select Input Type</p>
+</div>
+<div class="bg-gray-50 p-4 rounded-lg text-center">
+<div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center mx-auto mb-2">
+<span class="font-semibold">3</span>
+</div>
+<p class="text-sm">Extract Video Links</p>
+</div>
+<div class="bg-gray-50 p-4 rounded-lg text-center">
+<div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center mx-auto mb-2">
+<span class="font-semibold">4</span>
+</div>
+<p class="text-sm">View Results</p>
+</div>
+<div class="bg-gray-50 p-4 rounded-lg text-center">
+<div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center mx-auto mb-2">
+<span class="font-semibold">5</span>
+</div>
+<p class="text-sm">Export to CSV</p>
+</div>
+</div>
+<div class="text-sm text-yellow-700 bg-yellow-50 p-4 rounded-lg">
+<p><i class="fas fa-exclamation-triangle text-yellow-500 mr-2"></i> <strong>Note:</strong> Fetching many URLs can be slow and might encounter errors due to network issues or website restrictions (CORS). The tool uses proxies to help, but success isn't guaranteed for all URLs.</p>
+</div>
+</div>
+</section>
+<section class="mb-8">
+<div class="card bg-white p-6">
+<div class="flex items-center mb-6">
+<div class="w-10 h-10 rounded-full flex items-center justify-center bg-indigo-100 text-indigo-600 mr-3">
+<i class="fas fa-edit"></i>
+</div>
+<h2 class="text-xl font-bold sport-nz-text">Input</h2>
+</div>
+<div class="mb-6">
+<div class="flex items-center space-x-6 mb-4">
+<label class="inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" name="inputType" type="radio" value="urls"/>
+<div class="w-5 h-5 border-2 border-gray-300 rounded-full peer-checked:border-4 peer-checked:border-red-600"></div>
+<span class="ml-2 text-gray-700">URLs (one per line, max 500)</span>
+</label>
+<label class="inline-flex items-center cursor-pointer">
+<input class="sr-only peer" name="inputType" type="radio" value="html"/>
+<div class="w-5 h-5 border-2 border-gray-300 rounded-full peer-checked:border-4 peer-checked:border-red-600"></div>
+<span class="ml-2 text-gray-700">HTML Content (Single Page)</span>
+</label>
+</div>
+<div class="relative">
+<textarea class="input-field h-64 font-mono text-sm" id="inputContent" placeholder="Paste URLs (one per line) or HTML content here..."></textarea>
+<div class="absolute top-2 right-2">
+<button class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 px-2 py-1 rounded" id="pasteFromClipboard">
+<i class="fas fa-paste mr-1"></i> Paste
+                            </button>
+</div>
+</div>
+<p class="text-xs text-gray-500 mt-1" id="urlCountStatus">0 URLs detected.</p>
+</div>
+<div class="flex flex-wrap gap-4">
+<button class="btn btn-primary" id="extractBtn">
+<i class="fas fa-video mr-2"></i>
+                        Find Video Links
+                    </button>
+<button class="btn btn-secondary" id="clearBtn">
+<i class="fas fa-trash-alt mr-2"></i>
+                        Clear
+                    </button>
+</div>
+</div>
+</section>
+<section class="mb-8 hidden" id="progressSection">
+<div class="card bg-white p-6">
+<div class="flex items-center mb-4">
+<div class="w-10 h-10 rounded-full flex items-center justify-center bg-yellow-100 text-yellow-600 mr-3">
+<i class="fas fa-spinner fa-spin"></i>
+</div>
+<h2 class="text-xl font-bold sport-nz-text">Processing URLs...</h2>
+</div>
+<div class="progress-bar-container mb-2">
+<div class="progress-bar" id="progressBar" style="width: 0%"></div>
+</div>
+<div class="flex justify-between items-center text-sm mb-2">
+<span class="text-gray-600" id="progressText">Initializing...</span>
+<span class="font-medium" id="progressPercentage">0%</span>
+</div>
+<div class="text-sm text-gray-500">
+<span id="processStatus">Links found: 0</span>
+</div>
+<div class="mt-4 bg-gray-50 p-3 rounded-lg hidden" id="currentUrlContainer">
+<p class="text-sm text-gray-600">
+<span class="font-medium">Currently processing:</span>
+<span class="ml-2 font-mono text-xs break-all" id="currentUrl"></span>
+</p>
+</div>
+</div>
+</section>
+<section class="mb-8 hidden" id="resultsSection">
+<div class="card bg-white p-6">
+<div class="flex items-center justify-between mb-6 flex-wrap gap-4">
+<div class="flex items-center">
+<div class="w-10 h-10 rounded-full flex items-center justify-center bg-green-100 text-green-600 mr-3">
+<i class="fas fa-check-circle"></i>
+</div>
+<div>
+<h2 class="text-xl font-bold sport-nz-text">Video Links Found</h2>
+<p class="text-sm text-gray-600" id="resultsSummary">0 links found across 0 pages</p>
+</div>
+</div>
+<div class="flex flex-wrap gap-4">
+<div class="relative">
+<input class="input-field pl-10 pr-4 py-2" id="searchInput" placeholder="Search..." type="text"/>
+<i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+</div>
+<button class="btn btn-accent" id="exportBtn" style="background-color: var(--primary-color);">
+<i class="fas fa-file-export mr-2"></i>
+                            Export to CSV
+                        </button>
+</div>
+</div>
+<div class="flex items-center justify-between flex-wrap gap-4 mb-6">
+<span class="text-sm text-gray-600" id="filteredCount">Showing 0 of 0 links</span>
+<div class="flex items-center gap-4">
+<button class="text-sm text-blue-600 hover:text-blue-800" id="expandAllBtn">
+<i class="fas fa-expand-alt mr-1"></i> Expand All
+                        </button>
+<button class="text-sm text-blue-600 hover:text-blue-800" id="collapseAllBtn">
+<i class="fas fa-compress-alt mr-1"></i> Collapse All
+                        </button>
+</div>
+</div>
+<div class="space-y-6" id="resultsContainer">
+<!-- Results will be inserted here -->
+</div>
+<div class="hidden py-12 text-center" id="noResults">
+<div class="inline-block p-4 rounded-full bg-gray-100 mb-4">
+<i class="fas fa-video-slash text-4xl text-gray-400"></i>
+</div>
+<h3 class="text-lg font-medium text-gray-700">No Video Links Found</h3>
+<p class="text-gray-500 mt-2">No YouTube or Vimeo links were found in the provided URLs or HTML content.</p>
+</div>
+</div>
+</section>
+<section class="hidden" id="loadingSection">
+<div class="flex flex-col items-center justify-center py-16">
+<div class="w-16 h-16 border-4 border-t-4 border-gray-200 border-t-red-600 rounded-full animate-spin mb-4"></div>
+<div class="text-lg font-medium sport-nz-text">Initializing...</div>
+<p class="text-gray-500 mt-2">Preparing to process input.</p>
+</div>
+</section>
+</main>
+<footer class="bg-gray-800 text-white py-8 mt-auto">
+<div class="container mx-auto px-6">
+<div class="flex flex-col md:flex-row justify-between items-center">
+<div class="mb-4 md:mb-0">
+<h3 class="text-lg font-semibold">Sport NZ Video Link Finder</h3>
+<p class="text-gray-400 text-sm mt-1">A tool for finding YouTube &amp; Vimeo links from a list of URLs</p>
+</div>
+<div class="flex space-x-4">
+<a class="text-gray-400 hover:text-white transition-colors" href="#">
+<i class="fas fa-question-circle mr-1"></i> Help
+                    </a>
+<a class="text-gray-400 hover:text-white transition-colors" href="#">
+<i class="fas fa-code mr-1"></i> About
+                    </a>
+</div>
+</div>
+<div class="mt-6 pt-6 border-t border-gray-700 text-center text-gray-400 text-sm">
+<p>© 2025 Sport NZ Video Link Finder - Works completely offline</p>
+</div>
+</div>
+</footer>
+<script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM Elements
+            const inputContent = document.getElementById('inputContent'); // Changed from startUrlInput
+            // const maxPagesInput = document.getElementById('maxPages'); // Removed
+            const extractBtn = document.getElementById('extractBtn');
+            const clearBtn = document.getElementById('clearBtn');
+            const exportBtn = document.getElementById('exportBtn');
+            const resultsContainer = document.getElementById('resultsContainer');
+            const resultsSection = document.getElementById('resultsSection');
+            const loadingSection = document.getElementById('loadingSection');
+            const progressSection = document.getElementById('progressSection');
+            const progressBar = document.getElementById('progressBar');
+            const progressText = document.getElementById('progressText');
+            const progressPercentage = document.getElementById('progressPercentage');
+            const processStatus = document.getElementById('processStatus'); // Changed from crawlStatus
+            const currentUrlContainer = document.getElementById('currentUrlContainer');
+            const currentUrlEl = document.getElementById('currentUrl');
+            const searchInput = document.getElementById('searchInput');
+            const noResults = document.getElementById('noResults');
+            const inputTypeRadios = document.querySelectorAll('input[name="inputType"]');
+            const resultsSummary = document.getElementById('resultsSummary');
+            const filteredCount = document.getElementById('filteredCount');
+            const expandAllBtn = document.getElementById('expandAllBtn');
+            const collapseAllBtn = document.getElementById('collapseAllBtn');
+            const pasteFromClipboard = document.getElementById('pasteFromClipboard');
+            const urlCountStatus = document.getElementById('urlCountStatus');
+
+            // State variables
+            let allVideoLinks = [];
+            let filteredVideoLinks = [];
+            let expandedSources = new Set();
+            let isProcessing = false; // Flag to prevent multiple processes
+
+             // Update URL count on input change
+             inputContent.addEventListener('input', function() {
+                 const inputType = document.querySelector('input[name="inputType"]:checked').value;
+                 if (inputType === 'urls') {
+                     const urls = inputContent.value.trim().split('\n')
+                         .map(url => url.trim())
+                         .filter(url => url && (url.startsWith('http://') || url.startsWith('https://')));
+                     urlCountStatus.textContent = `${urls.length} URLs detected.`;
+                 } else {
+                     urlCountStatus.textContent = 'HTML input mode selected.';
+                 }
+             });
+             // Trigger initial count update
+             inputContent.dispatchEvent(new Event('input'));
+
+
+            // Paste from clipboard button
+            pasteFromClipboard.addEventListener('click', async function() {
+                try {
+                    const text = await navigator.clipboard.readText();
+                    inputContent.value = text;
+                    inputContent.dispatchEvent(new Event('input')); // Trigger count update
+                } catch (err) {
+                    console.error('Failed to read clipboard contents: ', err);
+                    showNotification('Unable to access clipboard. Please paste content manually.', 'error');
+                }
+            });
+
+            // Extract Button Click Handler
+            extractBtn.addEventListener('click', async function() {
+                if (isProcessing) {
+                    showNotification('Processing is already in progress.', 'warning');
+                    return;
+                }
+
+                const content = inputContent.value.trim();
+                const inputType = document.querySelector('input[name="inputType"]:checked').value;
+
+                if (!content) {
+                    showNotification('Please paste URLs or HTML content first.', 'error');
+                    return;
+                }
+
+                // Reset state
+                allVideoLinks = [];
+                filteredVideoLinks = [];
+                expandedSources = new Set();
+                isProcessing = true;
+
+                // Update UI
+                loadingSection.classList.add('hidden'); // Hide initial loading if shown
+                resultsSection.classList.add('hidden');
+                progressSection.classList.remove('hidden');
+                progressBar.style.width = '0%';
+                progressText.textContent = 'Initializing...';
+                progressPercentage.textContent = '0%';
+                processStatus.textContent = `Links found: 0`;
+                currentUrlContainer.classList.add('hidden');
+                extractBtn.disabled = true;
+                clearBtn.disabled = true;
+
+                try {
+                    if (inputType === 'urls') {
+                        let urls = content.split('\n')
+                            .map(url => url.trim())
+                            .filter(url => url && (url.startsWith('http://') || url.startsWith('https://')));
+
+                        if (urls.length === 0) {
+                            throw new Error('No valid URLs found. URLs must start with http:// or https://');
+                        }
+                        if (urls.length > 500) {
+                             showNotification(`Processing limited to the first 500 URLs (found ${urls.length}).`, 'warning');
+                             urls = urls.slice(0, 500); // Limit to 500
+                        }
+
+                        const totalUrls = urls.length;
+                        progressText.textContent = `Processing 0 of ${totalUrls} URLs...`;
+
+                        // Process each URL
+                        for (let i = 0; i < totalUrls; i++) {
+                            const url = urls[i];
+                            const progress = Math.round(((i) / totalUrls) * 100);
+
+                            // Update progress UI
+                            progressBar.style.width = `${progress}%`;
+                            progressText.textContent = `Processing URL ${i + 1} of ${totalUrls}...`;
+                            progressPercentage.textContent = `${progress}%`;
+                            currentUrlEl.textContent = url;
+                            currentUrlContainer.classList.remove('hidden');
+                            processStatus.textContent = `Links found: ${allVideoLinks.length}`;
+
+
+                            // Fetch and process the page
+                            try {
+                                const htmlContent = await fetchUrl(url);
+                                if (htmlContent) {
+                                    processHtml(htmlContent, url);
+                                } else {
+                                    // fetchUrl already logs warnings, maybe a less intrusive UI feedback?
+                                    // showNotification(`Could not retrieve content for ${url}`, 'warning', 2000);
+                                    console.warn(`Skipping processing for ${url} due to fetch failure.`);
+                                }
+                            } catch (error) { // Catch errors specifically from processHtml if any occur
+                                console.error(`Error processing HTML for ${url}:`, error);
+                                showNotification(`Error processing HTML for ${url}: ${error.message}`, 'warning', 2000);
+                            }
+
+                            // Small delay
+                            await new Promise(resolve => setTimeout(resolve, 50));
+                        }
+
+                        // Final progress update
+                        progressBar.style.width = '100%';
+                        progressText.textContent = `Finished processing ${totalUrls} URLs.`;
+                        progressPercentage.textContent = '100%';
+                        processStatus.textContent = `Links found: ${allVideoLinks.length}`;
+
+
+                    } else { // HTML input
+                        progressText.textContent = 'Processing HTML content...';
+                        progressBar.style.width = '50%'; // Indicate processing started
+                        processHtml(content, 'Direct HTML Input');
+                        progressBar.style.width = '100%';
+                        progressText.textContent = 'Finished processing HTML.';
+                        progressPercentage.textContent = '100%';
+                        processStatus.textContent = `Links found: ${allVideoLinks.length}`;
+                    }
+
+                    // Display final results
+                    filterResults(); // Filter before showing
+                    resultsSection.classList.remove('hidden');
+                    const uniqueSourcesCount = new Set(allVideoLinks.map(link => link.sourceUrl)).size;
+                    resultsSummary.textContent = `${allVideoLinks.length} video links found across ${uniqueSourcesCount} source(s).`;
+
+                    if (allVideoLinks.length > 0) {
+                        showNotification(`Processing complete! Found ${allVideoLinks.length} video links.`, 'success');
+                    } else {
+                        showNotification('Processing complete. No YouTube or Vimeo links found in the provided input.', 'warning');
+                    }
+
+                } catch (error) {
+                    console.error('Error during processing:', error);
+                    showNotification('Error: ' + error.message, 'error');
+                } finally {
+                    isProcessing = false;
+                    extractBtn.disabled = false;
+                    clearBtn.disabled = false;
+                    currentUrlContainer.classList.add('hidden');
+                    setTimeout(() => {
+                        if (!isProcessing) progressSection.classList.add('hidden');
+                    }, 3000);
+                }
+            });
+
+
+            // Show notification
+            function showNotification(message, type = 'info', duration = 5000) {
+                 const existingNotifications = document.querySelectorAll('.notification');
+                 existingNotifications.forEach(notification => notification.remove());
+                 const notification = document.createElement('div');
+                 notification.className = `notification ${type}`;
+                 let icon = 'info-circle';
+                 if (type === 'success') icon = 'check-circle';
+                 if (type === 'error') icon = 'exclamation-circle';
+                 if (type === 'warning') icon = 'exclamation-triangle';
+                 notification.innerHTML = `
+                     <i class="fas fa-${icon} mr-2"></i>
+                     <span>${message}</span>
+                     <button class="ml-4 text-white opacity-70 hover:opacity-100 transition-opacity">
+                         <i class="fas fa-times"></i>
+                     </button>
+                 `;
+                 const closeButton = notification.querySelector('button');
+                 closeButton.addEventListener('click', () => {
+                     notification.style.opacity = '0';
+                     notification.style.transform = 'translateY(10px)';
+                     setTimeout(() => notification.remove(), 300);
+                 });
+                 document.body.appendChild(notification);
+                 if (duration) {
+                     setTimeout(() => {
+                         if (notification.parentNode) {
+                             notification.style.opacity = '0';
+                             notification.style.transform = 'translateY(10px)';
+                             setTimeout(() => {
+                                 if (notification.parentNode) notification.remove();
+                             }, 300);
+                         }
+                     }, duration);
+                 }
+            }
+
+            // Fetch HTML from URL using multiple CORS proxy methods
+            async function fetchUrl(url) {
+                 try {
+                     const controller = new AbortController();
+                     const timeoutId = setTimeout(() => {
+                         controller.abort();
+                         console.warn(`Fetch timed out for ${url}`);
+                     }, 15000); // 15 second timeout
+
+                     const corsProxies = [
+                         `https://corsproxy.io/?${encodeURIComponent(url)}`,
+                         `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
+                         // Add more proxies if needed
+                     ];
+
+                     // Try direct fetch first
+                     try {
+                         console.log(`Attempting direct fetch for ${url}`);
+                         const directResponse = await fetch(url, { signal: controller.signal, headers: { 'Accept': 'text/html', 'User-Agent': 'Mozilla/5.0 Sport NZ Video Link Finder' }, mode: 'cors' });
+                         if (directResponse.ok) {
+                             clearTimeout(timeoutId);
+                             console.log(`Direct fetch successful for ${url}`);
+                             return await directResponse.text();
+                         }
+                         console.log(`Direct fetch failed for ${url} with status: ${directResponse.status}`);
+                     } catch (directError) {
+                         console.log(`Direct fetch failed for ${url}: ${directError.message}`);
+                     }
+
+                     // Try proxies
+                     for (const proxyUrl of corsProxies) {
+                         for (let attempt = 0; attempt < 2; attempt++) {
+                             try {
+                                 const proxyName = proxyUrl.split('/')[2]; // Get proxy domain for logging
+                                 console.log(`Trying proxy (attempt ${attempt + 1}): ${proxyName} for ${url}`);
+                                 const proxyResponse = await fetch(proxyUrl, { signal: controller.signal, headers: { 'Accept': 'text/html', 'X-Requested-With': 'XMLHttpRequest' } });
+                                 if (proxyResponse.ok) {
+                                     clearTimeout(timeoutId);
+                                     console.log(`Proxy fetch successful via ${proxyName} for ${url}`);
+                                     return await proxyResponse.text();
+                                 }
+                                 console.log(`Proxy ${proxyName} failed for ${url} with status: ${proxyResponse.status}`);
+                                 if (proxyResponse.status === 429) {
+                                     console.log(`Rate limited by proxy ${proxyName}, waiting...`);
+                                     await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 1000)); // Add jitter
+                                     // No 'continue' here, let it try the next attempt or proxy
+                                 }
+                             } catch (proxyError) {
+                                 const proxyName = proxyUrl.split('/')[2];
+                                 // Check if the error is due to timeout (AbortError)
+                                 if (proxyError.name === 'AbortError') {
+                                     console.warn(`Fetch aborted (likely timeout) for proxy ${proxyName} for ${url}`);
+                                     // If timeout occurred, no point retrying other proxies immediately
+                                     clearTimeout(timeoutId); // Ensure timer is cleared
+                                     return null; // Indicate failure due to timeout
+                                 }
+                                 console.log(`Proxy ${proxyName} error for ${url}: ${proxyError.message}`);
+                             }
+                             // Small delay between attempts on the same proxy
+                             if (attempt < 1) await new Promise(resolve => setTimeout(resolve, 500));
+                         }
+                         // Small delay before trying the next proxy
+                         await new Promise(resolve => setTimeout(resolve, 200));
+                     }
+
+                     clearTimeout(timeoutId); // Ensure timer is cleared if loop finishes
+                     console.warn(`All fetch methods failed for ${url}`);
+                     return null; // Return null instead of throwing error
+
+                 } catch (error) { // Catch any unexpected errors in the outer try block
+                     console.error(`Unexpected error in fetchUrl for ${url}:`, error);
+                     return null; // Return null on unexpected failure
+                 }
+            }
+
+
+            // Process HTML content to extract YouTube/Vimeo links
+            function processHtml(htmlContent, sourceUrl) {
+                 if (!htmlContent) return; // Skip if content fetching failed
+
+                try {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(htmlContent, 'text/html');
+                    let pageBaseUrl = sourceUrl; // Use the page's URL as the base by default
+
+                    // Check for <base> tag
+                    const baseTag = doc.querySelector('base');
+                     if (baseTag && baseTag.getAttribute('href')) {
+                         try {
+                             // Resolve the base href relative to the source URL
+                             pageBaseUrl = new URL(baseTag.getAttribute('href'), sourceUrl).href;
+                         } catch (e) {
+                             console.warn(`Invalid base href "${baseTag.getAttribute('href')}" on page ${sourceUrl}. Using page URL ${sourceUrl} as base.`);
+                             // Keep pageBaseUrl as sourceUrl
+                         }
+                     }
+
+                    let pageTitle = doc.title || 'No title';
+                    let linksFoundOnPage = 0;
+
+                    // Find video links (<a> tags)
+                    doc.querySelectorAll('a').forEach(link => {
+                        const href = link.getAttribute('href');
+                        if (!href) return;
+
+                        let absoluteUrl;
+                        try {
+                            // Resolve the link href relative to the calculated pageBaseUrl
+                            absoluteUrl = new URL(href, pageBaseUrl).href;
+                        } catch (e) {
+                            // console.warn(`Could not resolve link href "${href}" on page ${sourceUrl} with base ${pageBaseUrl}`);
+                            return; // Skip invalid URLs
+                        }
+
+                         // Clean URL (remove hash)
+                         try {
+                             const urlObj = new URL(absoluteUrl);
+                             urlObj.hash = '';
+                             const cleanAbsoluteUrl = urlObj.href;
+
+                             let platform = null;
+                             if (cleanAbsoluteUrl.includes('youtube.com/watch?v=') || cleanAbsoluteUrl.includes('youtu.be/')) {
+                                 platform = 'YouTube';
+                             } else if (cleanAbsoluteUrl.includes('vimeo.com/')) {
+                                  // Avoid channel/group links, look for video IDs (numbers)
+                                  if (/\d+/.test(cleanAbsoluteUrl.split('/').pop().split('?')[0] || '')) { // Check path part before query
+                                      platform = 'Vimeo';
+                                  }
+                             }
+
+                             if (platform) {
+                                 // Check if this exact video URL from this source page already exists
+                                 if (!allVideoLinks.some(l => l.sourceUrl === sourceUrl && l.videoUrl === cleanAbsoluteUrl)) {
+                                     allVideoLinks.push({
+                                         sourceUrl: sourceUrl,
+                                         pageTitle: pageTitle,
+                                         videoUrl: cleanAbsoluteUrl,
+                                         linkType: 'Link',
+                                         platform: platform
+                                     });
+                                     linksFoundOnPage++;
+                                 }
+                             }
+                         } catch (e) {
+                             console.warn(`Error processing potential video link URL: ${absoluteUrl}`, e);
+                         }
+                    });
+
+                    // Find embedded videos (<iframe> tags)
+                    doc.querySelectorAll('iframe').forEach(iframe => {
+                        const src = iframe.getAttribute('src');
+                        if (!src) return;
+
+                        let absoluteSrc;
+                         try {
+                             // Resolve iframe src relative to the calculated pageBaseUrl
+                             absoluteSrc = new URL(src, pageBaseUrl).href;
+                         } catch (e) {
+                            // console.warn(`Could not resolve iframe src "${src}" on page ${sourceUrl} with base ${pageBaseUrl}`);
+                            return; // Skip invalid URLs
+                         }
+
+                        try {
+                            let platform = null;
+                            if (absoluteSrc.includes('youtube.com/embed/')) {
+                                platform = 'YouTube';
+                            } else if (absoluteSrc.includes('player.vimeo.com/video/')) {
+                                platform = 'Vimeo';
+                            }
+
+                            if (platform) {
+                                 // Check if this exact embed URL from this source page already exists
+                                 if (!allVideoLinks.some(l => l.sourceUrl === sourceUrl && l.videoUrl === absoluteSrc)) {
+                                     allVideoLinks.push({
+                                         sourceUrl: sourceUrl,
+                                         pageTitle: pageTitle,
+                                         videoUrl: absoluteSrc,
+                                         linkType: 'Embed',
+                                         platform: platform
+                                     });
+                                     linksFoundOnPage++;
+                                 }
+                            }
+                        } catch(e) {
+                             console.warn(`Error processing potential video embed URL: ${absoluteSrc}`, e);
+                        }
+                    });
+                    // Only log if links were found to reduce console noise
+                    if (linksFoundOnPage > 0) {
+                        console.log(`Found ${linksFoundOnPage} new video links on ${sourceUrl}`);
+                    }
+
+
+                } catch (error) {
+                    console.error(`Error processing HTML for ${sourceUrl}:`, error);
+                    // Avoid flooding notifications for HTML parsing errors
+                    // showNotification(`Error processing HTML for ${sourceUrl}`, 'error');
+                }
+            }
+
+
+            // Filter and display results
+            function filterResults() {
+                const searchTerm = searchInput.value.toLowerCase();
+
+                filteredVideoLinks = allVideoLinks.filter(link => {
+                    // Ensure all properties exist before calling toLowerCase
+                    const sourceUrlMatch = link.sourceUrl && link.sourceUrl.toLowerCase().includes(searchTerm);
+                    const pageTitleMatch = link.pageTitle && link.pageTitle.toLowerCase().includes(searchTerm);
+                    const videoUrlMatch = link.videoUrl && link.videoUrl.toLowerCase().includes(searchTerm);
+                    const linkTypeMatch = link.linkType && link.linkType.toLowerCase().includes(searchTerm);
+                    const platformMatch = link.platform && link.platform.toLowerCase().includes(searchTerm);
+
+                    return sourceUrlMatch || pageTitleMatch || videoUrlMatch || linkTypeMatch || platformMatch;
+                });
+
+                filteredCount.textContent = `Showing ${filteredVideoLinks.length} of ${allVideoLinks.length} links`;
+                displayGroupedResults(filteredVideoLinks);
+            }
+
+            // Group video links by source URL
+            function groupLinksBySource(links) {
+                const groupedLinks = {};
+                links.forEach(link => {
+                    const sourceKey = link.sourceUrl; // Use the original source URL as the key
+                    if (!groupedLinks[sourceKey]) {
+                        groupedLinks[sourceKey] = {
+                            sourceUrl: sourceKey,
+                            pageTitle: link.pageTitle || 'No title',
+                            links: []
+                        };
+                    }
+                     // Prevent adding the exact same video URL multiple times *within the same source page group*
+                     if (!groupedLinks[sourceKey].links.some(existingLink => existingLink.videoUrl === link.videoUrl)) {
+                         groupedLinks[sourceKey].links.push({
+                             videoUrl: link.videoUrl,
+                             linkType: link.linkType,
+                             platform: link.platform
+                         });
+                     }
+                });
+                return Object.values(groupedLinks);
+            }
+
+            // Display results grouped by source URL
+            function displayGroupedResults(links) {
+                resultsContainer.innerHTML = '';
+                if (links.length === 0) {
+                    // Check if there was input but no results vs no input yet
+                    if (allVideoLinks.length > 0 || inputContent.value.trim() !== '') {
+                        noResults.classList.remove('hidden');
+                    } else {
+                        noResults.classList.add('hidden');
+                    }
+                    return;
+                }
+                noResults.classList.add('hidden');
+
+                const groupedLinks = groupLinksBySource(links);
+
+                groupedLinks.forEach((group, index) => {
+                     if (group.links.length === 0) return; // Skip groups with no links after deduplication
+
+                    const sourceId = `source-${index}`;
+                    const isExpanded = expandedSources.has(sourceId);
+                    const sourceSection = document.createElement('div');
+                    sourceSection.className = 'source-card';
+                    sourceSection.dataset.sourceId = sourceId;
+                    const sourceHeader = document.createElement('div');
+                    sourceHeader.className = 'source-header cursor-pointer';
+
+                    let displayUrl = group.sourceUrl;
+                    if (displayUrl !== 'Direct HTML Input') { // Handle direct HTML input case
+                        try {
+                            const url = new URL(displayUrl);
+                            // Shorten display URL if too long
+                            let path = url.pathname;
+                            if (path.length > 50) {
+                                path = path.substring(0, 25) + '...' + path.substring(path.length - 25);
+                            }
+                            displayUrl = url.hostname + path;
+                        } catch (e) { /* Keep as is */ }
+                    }
+
+                    // Count platforms
+                    const platformCounts = group.links.reduce((acc, link) => {
+                        acc[link.platform] = (acc[link.platform] || 0) + 1;
+                        return acc;
+                    }, {});
+
+                    let platformBadgesHtml = '';
+                    if (platformCounts.YouTube) {
+                        platformBadgesHtml += `<span class="badge badge-youtube mr-2 mb-1"><i class="fab fa-youtube mr-1"></i> ${platformCounts.YouTube} YouTube</span>`;
+                    }
+                    if (platformCounts.Vimeo) {
+                        platformBadgesHtml += `<span class="badge badge-vimeo mr-2 mb-1"><i class="fab fa-vimeo-v mr-1"></i> ${platformCounts.Vimeo} Vimeo</span>`;
+                    }
+
+
+                    sourceHeader.innerHTML = `
+                        <div class="flex items-center justify-between flex-wrap">
+                            <div class="flex-grow min-w-0 pr-4">
+                                <h3 class="font-medium text-lg flex items-center truncate" title="${escapeHtml(group.sourceUrl)}">
+                                    <i class="fas fa-globe-americas text-gray-400 mr-2 flex-shrink-0"></i>
+                                    ${group.sourceUrl === 'Direct HTML Input' ? escapeHtml(displayUrl) : `<a href="${escapeHtml(group.sourceUrl)}" target="_blank" rel="noopener noreferrer" class="hover:underline truncate">${escapeHtml(displayUrl)}</a>`}
+                                </h3>
+                                <p class="text-sm text-gray-600 mt-1 truncate" title="${escapeHtml(group.pageTitle)}">
+                                    <span class="font-medium">Page Title:</span> ${escapeHtml(group.pageTitle)}
+                                </p>
+                                <div class="flex flex-wrap items-center mt-2">
+                                    ${platformBadgesHtml}
+                                    <span class="badge badge-other-video mb-1">
+                                        <i class="fas fa-video mr-1"></i> ${group.links.length} total video link${group.links.length !== 1 ? 's' : ''}
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="toggle-icon flex-shrink-0 pl-2">
+                                <i class="fas ${isExpanded ? 'fa-chevron-up' : 'fa-chevron-down'} text-gray-400"></i>
+                            </div>
+                        </div>
+                    `;
+                    sourceSection.appendChild(sourceHeader);
+
+                    const tableContainer = document.createElement('div');
+                    tableContainer.className = `overflow-x-auto ${isExpanded ? '' : 'hidden'}`;
+                    const linksTable = document.createElement('table');
+                    linksTable.className = 'results-table';
+                    const tableHeader = document.createElement('thead');
+                    tableHeader.innerHTML = `
+                        <tr>
+                            <th>Platform</th>
+                            <th>Type</th>
+                            <th>Video URL</th>
+                        </tr>
+                    `;
+                    linksTable.appendChild(tableHeader);
+                    const tableBody = document.createElement('tbody');
+
+                    group.links.forEach(link => {
+                        const row = document.createElement('tr');
+                        const platformIcon = link.platform === 'YouTube' ? 'fa-youtube' : 'fa-vimeo-v';
+                        const platformBadgeClass = link.platform === 'YouTube' ? 'badge-youtube' : 'badge-vimeo';
+
+                        row.innerHTML = `
+                             <td class="w-28">
+                                <span class="badge ${platformBadgeClass}">
+                                    <i class="fab ${platformIcon} mr-1"></i> ${link.platform}
+                                </span>
+                            </td>
+                            <td class="w-24">
+                                <span class="badge ${link.linkType === 'Embed' ? 'bg-blue-100 text-blue-700' : 'bg-green-100 text-green-700'}">
+                                    <i class="fas ${link.linkType === 'Embed' ? 'fa-code' : 'fa-link'} mr-1"></i>
+                                    ${link.linkType}
+                                </span>
+                            </td>
+                            <td>
+                                <a href="${link.videoUrl}" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:text-blue-800 hover:underline flex items-center group">
+                                    <span class="truncate group-hover:whitespace-normal group-hover:break-all max-w-md">${escapeHtml(link.videoUrl)}</span>
+                                    <i class="fas fa-external-link-alt ml-1 text-xs flex-shrink-0"></i>
+                                </a>
+                            </td>
+                        `;
+                        tableBody.appendChild(row);
+                    });
+
+                    linksTable.appendChild(tableBody);
+                    tableContainer.appendChild(linksTable);
+                    sourceSection.appendChild(tableContainer);
+
+                    sourceHeader.addEventListener('click', function() {
+                        const tableContainer = this.nextElementSibling;
+                        const toggleIcon = this.querySelector('.toggle-icon i');
+                        const sourceId = this.parentElement.dataset.sourceId;
+                        if (tableContainer.classList.contains('hidden')) {
+                            tableContainer.classList.remove('hidden');
+                            toggleIcon.classList.replace('fa-chevron-down', 'fa-chevron-up');
+                            expandedSources.add(sourceId);
+                        } else {
+                            tableContainer.classList.add('hidden');
+                            toggleIcon.classList.replace('fa-chevron-up', 'fa-chevron-down');
+                            expandedSources.delete(sourceId);
+                        }
+                    });
+                    resultsContainer.appendChild(sourceSection);
+                });
+            }
+
+            // Expand all sections
+            expandAllBtn.addEventListener('click', function() {
+                document.querySelectorAll('.source-card').forEach(section => {
+                    const tableContainer = section.querySelector('.overflow-x-auto');
+                    if (tableContainer) {
+                        const toggleIcon = section.querySelector('.toggle-icon i');
+                        const sourceId = section.dataset.sourceId;
+                        tableContainer.classList.remove('hidden');
+                        if (toggleIcon) toggleIcon.classList.replace('fa-chevron-down', 'fa-chevron-up');
+                        expandedSources.add(sourceId);
+                    }
+                });
+            });
+
+            // Collapse all sections
+            collapseAllBtn.addEventListener('click', function() {
+                document.querySelectorAll('.source-card').forEach(section => {
+                     const tableContainer = section.querySelector('.overflow-x-auto');
+                     if (tableContainer) {
+                        const toggleIcon = section.querySelector('.toggle-icon i');
+                        const sourceId = section.dataset.sourceId;
+                        tableContainer.classList.add('hidden');
+                        if (toggleIcon) toggleIcon.classList.replace('fa-chevron-up', 'fa-chevron-down');
+                        expandedSources.delete(sourceId);
+                    }
+                });
+            });
+
+            // Escape HTML to prevent XSS
+            function escapeHtml(unsafe) {
+                if (!unsafe) return '';
+                try {
+                    return unsafe
+                        .replace(/&/g, "&amp;")
+                        .replace(/</g, "&lt;")
+                        .replace(/>/g, "&gt;")
+                        .replace(/"/g, "&quot;")
+                        .replace(/'/g, "&#039;");
+                } catch (e) {
+                    console.error("Error escaping HTML for:", unsafe, e);
+                    return "Error escaping content";
+                }
+            }
+
+            // Search functionality
+            searchInput.addEventListener('input', filterResults);
+
+            // Clear button
+            clearBtn.addEventListener('click', function() {
+                if (isProcessing) {
+                    showNotification('Cannot clear while processing.', 'warning');
+                    return;
+                }
+                inputContent.value = ''; // Clear textarea
+                resultsSection.classList.add('hidden');
+                progressSection.classList.add('hidden');
+                allVideoLinks = [];
+                filteredVideoLinks = [];
+                expandedSources = new Set();
+                urlCountStatus.textContent = '0 URLs detected.'; // Reset count
+                noResults.classList.add('hidden'); // Hide no results message
+                resultsSummary.textContent = '0 links found across 0 pages'; // Reset summary
+                filteredCount.textContent = 'Showing 0 of 0 links'; // Reset count display
+            });
+
+            // Export to CSV
+            exportBtn.addEventListener('click', function() {
+                if (filteredVideoLinks.length === 0) {
+                    showNotification('No data to export.', 'warning');
+                    return;
+                }
+
+                 const csvData = [];
+                 const groupedLinks = groupLinksBySource(filteredVideoLinks);
+                 groupedLinks.forEach(group => {
+                     group.links.forEach(link => {
+                         csvData.push({
+                             'Source URL': group.sourceUrl,
+                             'Page Title': group.pageTitle,
+                             'Platform': link.platform,
+                             'Video URL': link.videoUrl,
+                             'Link Type': link.linkType
+                         });
+                     });
+                 });
+
+                if (csvData.length === 0) {
+                     showNotification('No unique links found in the filtered results to export.', 'warning');
+                     return;
+                 }
+
+                try {
+                    const csv = Papa.unparse(csvData);
+                    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+                    const url = URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.setAttribute('href', url);
+                    link.setAttribute('download', 'sport_nz_video_links.csv');
+                    link.style.visibility = 'hidden';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    showNotification('Export successful!', 'success');
+
+                    if (typeof window.save_data_to_csv === 'function') {
+                        try {
+                            window.save_data_to_csv('sport_nz_video_links.csv', csvData);
+                        } catch (e) {
+                            console.log('Optional save_data_to_csv function not available or failed:', e);
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error exporting CSV:', error);
+                    showNotification('Error exporting to CSV.', 'error');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
